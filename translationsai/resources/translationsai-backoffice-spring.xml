@@ -7,7 +7,20 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<!-- Legacy placeholder service - kept for backward compatibility -->
 	<bean id="translationsaiService" class="org.training.services.TranslationsaiService" />
+
+	<!-- AI Client Configuration -->
+	<bean id="openAiClient" class="org.training.ai.client.impl.OpenAiClient">
+		<property name="apiKey" value="${translationsai.openai.apiKey:}"/>
+		<property name="baseUrl" value="${translationsai.openai.baseUrl:https://api.openai.com/v1}"/>
+	</bean>
+
+	<!-- AI Service -->
+	<bean id="translationsAiService" class="org.training.ai.service.impl.DefaultTranslationsAiService">
+		<property name="aiClient" ref="openAiClient"/>
+		<property name="configurationService" ref="configurationService"/>
+	</bean>
 
 	<bean id="translationsaiLabelLocator" class="com.hybris.cockpitng.util.labels.ResourcesLabelLocator" scope="singleton" init-method="init" lazy-init="false">
   		<property name="location" value="/translationsai-backoffice-labels/"/>

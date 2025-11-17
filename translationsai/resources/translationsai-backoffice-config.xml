@@ -2,12 +2,17 @@
 <!--
  Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved
 -->
-<config xmlns="http://www.hybris.com/cockpit/config">
+<config xmlns="http://www.hybris.com/cockpit/config"
+        xmlns:y="http://www.hybris.com/cockpit/config/hybris">
 
-	<!-- translationsai UI configuration should be provided here -->
-
-	<!--<context component="component-code" module="translationsai">-->
-		<!--Please check documentation for code snippets for specific components-->
-	<!--</context>-->
+    <!-- AI Enhance Description Action for Product (Editor Area toolbar) -->
+    <context type="Product" component="editorareaactions">
+        <y:actions>
+            <y:group qualifier="common" position="40">
+                <!-- Place after Sync action (typically at position 30) -->
+                <y:action action-id="org.training.backoffice.actions.enhanceDescriptionAction" property="currentObject" position="40"/>
+            </y:group>
+        </y:actions>
+    </context>
 
 </config>

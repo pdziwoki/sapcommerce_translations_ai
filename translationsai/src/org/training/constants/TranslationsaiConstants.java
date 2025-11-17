@@ -7,7 +7,9 @@ package org.training.constants;
 public final class TranslationsaiConstants extends GeneratedTranslationsaiConstants
 {
 	public static final String EXTENSIONNAME = "translationsai";
-	
+
+    public static final String NOTIFICATION_TYPE = "JustMessage";
+
 	private TranslationsaiConstants()
 	{
 		//empty

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Action definition for AI Enhance Description in translationsai extension
+  Ensures action-id in backoffice config maps to this definition id.
+-->
+<action-definition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   id="org.training.backoffice.actions.enhanceDescriptionAction"
+                   xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/action-definition.xsd">
+    <name>AI Enhance Description</name>
+    <description>Improve the current product description using AI.</description>
+    <author>translationsai</author>
+    <version>1.0</version>
+
+    <iconUri>icons/enhance_description.png</iconUri>
+
+    <!-- Java class implementing com.hybris.cockpitng.actions.CockpitAction -->
+    <actionClassName>org.training.backoffice.actions.EnhanceDescriptionAction</actionClassName>
+</action-definition>

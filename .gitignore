@@ -24,3 +24,11 @@ hs_err_pid*
 replay_pid*
 
 .idea
+translationsai/backoffice/classes/
+translationsai/classes/
+translationsai/*.xsd
+translationsai/resources/*.xsd
+translationsai/platformhome.properties
+translationsai/resources/*-testclasses.xml
+translationsai/build.xml
+*.iml
