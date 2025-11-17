@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved
+-->
+<widget-definition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/widget-definition.xsd"
+	id="org.training.widgets.translationsaiwidget">
+	<name>translationsai Sample Widget</name>
+	<description>translationsai Sample Widget</description>
+	<defaultTitle>translationsai Sample Widget</defaultTitle>
+	<author>Extgen</author>
+	<version>1.0</version>
+	<view src="translationsaiwidget.zul" />
+	<keywords>
+		<keyword>translationsai</keyword>
+	</keywords>
+	<controller class="org.training.widgets.TranslationsaiController" />
+</widget-definition>

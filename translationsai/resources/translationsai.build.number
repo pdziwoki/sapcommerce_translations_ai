@@ -1,0 +1,11 @@
+#Ant properties
+#Wed Aug 06 13:25:41 CEST 2025
+builddate=20250806 1317
+description=translationsai
+group.id=de.hybris.platform
+module.name=platform-module
+name=translationsai
+releasedate=20250604 0846
+vendor=hybris
+version=2211.43
+version.api=2211
