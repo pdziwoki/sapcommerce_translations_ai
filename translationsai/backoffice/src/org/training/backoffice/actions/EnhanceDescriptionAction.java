@@ -9,9 +9,10 @@ import com.hybris.cockpitng.util.notifications.event.NotificationEvent;
 import de.hybris.platform.core.model.product.ProductModel;
 import de.hybris.platform.servicelayer.i18n.I18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
-import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
-import org.training.ai.dto.PromptOptions;
+import org.training.ai.dto.options.PromptOptions;
+import org.training.ai.dto.response.Translation;
 import org.training.ai.exception.AiClientException;
 import org.training.ai.service.TranslationsAiService;
 import org.training.constants.TranslationsaiConstants;
@@ -65,9 +66,9 @@ public class EnhanceDescriptionAction implements CockpitAction<ProductModel, Obj
             }
 
             // Build prompt options with default values
-            final Map<String, String> enhancedByLocale = getEnhancedDescriptions(locale, product);
+            final List<Translation> enhancedByLocale = getEnhancedDescriptions(locale, product);
 
-            if (MapUtils.isEmpty(enhancedByLocale)) {
+            if (CollectionUtils.isEmpty(enhancedByLocale)) {
                 notificationService.notifyUser(
                         notificationService.getWidgetNotificationSource(ctx),
                         TranslationsaiConstants.NOTIFICATION_TYPE,
@@ -89,26 +90,22 @@ public class EnhanceDescriptionAction implements CockpitAction<ProductModel, Obj
             final Textbox originalDescriptionTextbox = new Textbox(originalDescription);
             originalDescriptionTextbox.setReadonly(true);
             originalDescriptionTextbox.setMultiline(true);
-            originalDescriptionTextbox.setHflex("1");
-            originalDescriptionTextbox.setRows(4);
-//            originalDescriptionTextbox.setStyle("width: 92%;");
+            originalDescriptionTextbox.setHeight("80px");
             root.appendChild(originalDescriptionTextbox);
             root.appendChild(new Separator());
 
             // Editors per locale
             final LinkedHashMap<String, Textbox> editors = new LinkedHashMap<>();
-            for (Map.Entry<String, String> e : enhancedByLocale.entrySet()) {
-                final String lang = e.getKey();
-                final String suggestion = e.getValue();
+            for (Translation translation : enhancedByLocale) {
+                final String lang = translation.getLang();
+                final String suggestion = translation.getDescription();
 
                 final Label langLbl = new Label(lang + ":");
                 root.appendChild(langLbl);
 
                 final Textbox editor = new Textbox(suggestion);
                 editor.setMultiline(true);
-                editor.setHflex("1");
-                editor.setRows(6);
-//                editor.setStyle("width: 92%;");
+                editor.setHeight("80px");
                 editors.put(lang, editor);
                 root.appendChild(editor);
                 root.appendChild(new Separator());
@@ -119,9 +116,9 @@ public class EnhanceDescriptionAction implements CockpitAction<ProductModel, Obj
             buttons.setHflex("1");
             buttons.setPack("end");
             buttons.setSpacing("8px");
-            final Button okBtn = new Button("OK");
+            final Button okBtn = new Button(ctx.getLabel("enhanceDescriptionAction.ok.button.label"));
             okBtn.setStyle("background-color:#1976d2;color:#fff;border:1px solid #1976d2;");
-            final Button cancelBtn = new Button("Cancel");
+            final Button cancelBtn = new Button("enhanceDescriptionAction.cancel.button.label");
             cancelBtn.setStyle("background-color:#1976d2;color:#fff;border:1px solid #1976d2;");
             buttons.appendChild(cancelBtn);
             buttons.appendChild(okBtn);
@@ -231,34 +228,32 @@ public class EnhanceDescriptionAction implements CockpitAction<ProductModel, Obj
     }
 
     private static Window createWindow(ActionContext<ProductModel> ctx) {
-        final Window dlg = new Window();
-        dlg.setTitle(ctx.getLabel("enhanceDescriptionAction.preview.title"));
-        dlg.setWidth("900px");
-        dlg.setHeight("70%");
-        dlg.setClosable(true);
-        dlg.setBorder("normal");
-        return dlg;
+        final Window window = new Window();
+        window.setTitle(ctx.getLabel("enhanceDescriptionAction.preview.title"));
+        window.setWidth("900px");
+        window.setHeight("70%");
+        window.setClosable(true);
+        window.setBorder("normal");
+        return window;
     }
 
-    private Map<String, String> getEnhancedDescriptions(Locale locale, ProductModel product) {
+    private List<Translation> getEnhancedDescriptions(final Locale locale, final ProductModel product) {
         final PromptOptions options = new PromptOptions();
-        options.setLanguage(locale.toLanguageTag());
+        options.setSourceLanguage(locale.toLanguageTag());
         options.setTone("professional");
-        options.setPreserveTechnicalTerms(true);
 
         // Determine target languages: all system locales, base first
         final Set<Locale> allLocales = i18nService.getSupportedLocales();
         final List<String> targetLangs = allLocales.stream()
                 .map(Locale::toLanguageTag)
-                .sorted()
+                .filter(lang -> !lang.equals(locale.toLanguageTag()))
                 .collect(Collectors.toList());
-        if (!targetLangs.contains(locale.toLanguageTag())) {
-            targetLangs.add(0, locale.toLanguageTag());
-        }
+
+        targetLangs.add(0, locale.toLanguageTag());
+
         options.setTargetLanguages(targetLangs);
 
-        final Map<String, String> enhancedByLocale = translationsAiService.enhanceDescription(product, locale, options);
-        return enhancedByLocale;
+        return translationsAiService.enhanceDescription(product, locale, options);
     }
 
     @Override

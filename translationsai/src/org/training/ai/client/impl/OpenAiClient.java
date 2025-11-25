@@ -1,105 +1,66 @@
-/*
- * Copyright (c) 2023 SAP SE or an SAP affiliate company. All rights reserved
- */
 package org.training.ai.client.impl;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
 import org.apache.log4j.Logger;
 import org.training.ai.client.AiClient;
-import org.training.ai.dto.AiClientOptions;
+import org.training.ai.dto.options.AiClientOptions;
+import org.training.ai.dto.response.Translation;
+import org.training.ai.dto.response.TranslationsResponse;
 import org.training.ai.exception.AiClientException;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.List;
 
 /**
- * OpenAI client implementation using Chat Completions API
+ * OpenAI client implementation using OpenAI Java SDK (Responses API).
+ * <p>
+ * The API key is injected via the {@link #setApiKey(String)} setter (e.g., from a properties file/Spring),
+ * not via environment variables.
  */
-public class OpenAiClient implements AiClient
-{
-	private static final Logger LOG = Logger.getLogger(OpenAiClient.class);
+public class OpenAiClient implements AiClient {
+    private static final Logger LOG = Logger.getLogger(OpenAiClient.class);
 
-	private String apiKey;
-	private String baseUrl = "https://api.openai.com/v1";
-	private final ObjectMapper objectMapper = new ObjectMapper();
+    private String apiKey;
 
-	@Override
-	public String enhance(final String prompt, final AiClientOptions options) throws AiClientException
-	{
-		if (apiKey == null || apiKey.trim().isEmpty())
-		{
-			throw new AiClientException("OpenAI API key is not configured");
-		}
+    @Override
+    public List<Translation> enhance(final String prompt, final AiClientOptions options) throws AiClientException {
+        try {
 
-		final HttpPost post = new HttpPost(baseUrl + "/chat/completions");
-		post.setHeader("Authorization", "Bearer " + apiKey);
-		post.setHeader("Content-Type", "application/json");
+            final OpenAIClient client = OpenAIOkHttpClient.builder()
+                    .apiKey(apiKey)
+                    .timeout(options.getTimeout())
+                    .build();
 
-		final ObjectNode body = JsonNodeFactory.instance.objectNode();
-		body.put("model", options.getModel());
+            final StructuredChatCompletionCreateParams<TranslationsResponse> params = ChatCompletionCreateParams.builder()
+                    .addUserMessage(prompt)
+                    .model(options.getModel())
+                    .responseFormat(TranslationsResponse.class)
+                    .n(1)
+                    .build();
 
-		final ArrayNode messages = body.putArray("messages");
-		final ObjectNode systemMessage = messages.addObject();
-		systemMessage.put("role", "system");
-		systemMessage.put("content", "You improve product descriptions.");
+            final List<Translation> translations = client
+                    .chat()
+                    .completions()
+                    .create(params)
+                    .choices()
+                    .stream()
+                    .findFirst() // get the first (and only) choice
+                    .flatMap(choice -> choice.message().content()) // Optional<List<ResponseContent>>
+                    .map(TranslationsResponse::getTranslations)
+                    .orElseThrow(() -> new AiClientException("OpenAI returned no translations"));
 
-		final ObjectNode userMessage = messages.addObject();
-		userMessage.put("role", "user");
-		userMessage.put("content", prompt);
+            return translations;
 
-		body.put("temperature", options.getTemperature());
-		body.put("max_tokens", options.getMaxTokens());
+        } catch (final Exception e) {
+            LOG.error("Error calling OpenAI via SDK", e);
+            throw new AiClientException("OpenAI SDK error", e);
+        }
+    }
 
-		try
-		{
-			post.setEntity(new StringEntity(body.toString(), StandardCharsets.UTF_8));
+    public void setApiKey(final String apiKey) {
+        this.apiKey = apiKey;
+    }
 
-			try (CloseableHttpClient client = HttpClients.createDefault();
-					CloseableHttpResponse resp = client.execute(post))
-			{
-				final int statusCode = resp.getStatusLine().getStatusCode();
-				final String json = EntityUtils.toString(resp.getEntity());
-
-				LOG.debug("OpenAI response status: " + statusCode);
-
-				if (statusCode >= 200 && statusCode < 300)
-				{
-					final JsonNode root = objectMapper.readTree(json);
-					final String enhancedText = root.path("choices").get(0).path("message").path("content").asText();
-					return enhancedText.trim();
-				}
-				else
-				{
-					LOG.error("OpenAI API error: " + statusCode + " - " + json);
-					throw new AiClientException("OpenAI error: " + statusCode + " - " + json);
-				}
-			}
-		}
-		catch (final IOException e)
-		{
-			LOG.error("HTTP error calling OpenAI", e);
-			throw new AiClientException("HTTP error", e);
-		}
-	}
-
-	public void setApiKey(final String apiKey)
-	{
-		this.apiKey = apiKey;
-	}
-
-	public void setBaseUrl(final String baseUrl)
-	{
-		this.baseUrl = baseUrl;
-	}
 }

@@ -4,7 +4,7 @@
 --><extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
         	
     
-    <extension abstractclassprefix="Generated" classprefix="Translationsai" name="translationsai" usemaven="false">
+    <extension abstractclassprefix="Generated" classprefix="Translationsai" name="translationsai" usemaven="true">
                 		
         
         <requires-extension name="backoffice"/>

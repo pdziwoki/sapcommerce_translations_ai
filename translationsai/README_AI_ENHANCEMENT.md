@@ -47,7 +47,6 @@ translationsai.openai.baseUrl=https://api.openai.com/v1
 translationsai.openai.model=gpt-4o-mini
 
 # AI Model Parameters
-translationsai.temperature=0.3
 translationsai.maxTokens=512
 translationsai.timeout.ms=20000
 ```
@@ -84,7 +83,6 @@ The widget provides more control:
 3. Configure options:
    - **Tone**: Select the desired writing style
    - **Max Length**: Optionally limit word count
-   - **Preserve Technical Terms**: Keep technical specifications intact
 4. Click "Enhance with AI"
 5. Review the enhanced description in the preview panel
 6. Click "Apply" to save or "Try Again" to regenerate

@@ -32,3 +32,4 @@ translationsai/platformhome.properties
 translationsai/resources/*-testclasses.xml
 translationsai/build.xml
 *.iml
+translationsai/lib/

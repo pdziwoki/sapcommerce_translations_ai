@@ -1,10 +1,10 @@
-/*
- * Copyright (c) 2023 SAP SE or an SAP affiliate company. All rights reserved
- */
 package org.training.ai.client;
 
-import org.training.ai.dto.AiClientOptions;
+import org.training.ai.dto.options.AiClientOptions;
+import org.training.ai.dto.response.Translation;
 import org.training.ai.exception.AiClientException;
+
+import java.util.List;
 
 /**
  * Interface for AI client implementations (OpenAI, Azure OpenAI, etc.)
@@ -19,5 +19,5 @@ public interface AiClient
 	 * @return enhanced text
 	 * @throws AiClientException if the AI call fails
 	 */
-	String enhance(String prompt, AiClientOptions options) throws AiClientException;
+	List<Translation> enhance(String prompt, AiClientOptions options) throws AiClientException;
 }

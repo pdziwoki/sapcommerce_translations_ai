@@ -13,7 +13,6 @@
 	<!-- AI Client Configuration -->
 	<bean id="openAiClient" class="org.training.ai.client.impl.OpenAiClient">
 		<property name="apiKey" value="${translationsai.openai.apiKey:}"/>
-		<property name="baseUrl" value="${translationsai.openai.baseUrl:https://api.openai.com/v1}"/>
 	</bean>
 
 	<!-- AI Service -->
