@@ -7,16 +7,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<!-- Legacy placeholder service - kept for backward compatibility -->
-	<bean id="translationsaiService" class="org.training.services.TranslationsaiService" />
-
 	<!-- AI Client Configuration -->
-	<bean id="openAiClient" class="org.training.ai.client.impl.OpenAiClient">
+	<bean id="openAiClient" class="com.translations.ai.client.impl.OpenAiClient">
 		<property name="apiKey" value="${translationsai.openai.apiKey:}"/>
 	</bean>
 
 	<!-- AI Service -->
-	<bean id="translationsAiService" class="org.training.ai.service.impl.DefaultTranslationsAiService">
+	<bean id="translationsAiService" class="com.translations.ai.service.impl.DefaultTranslationsAiService">
 		<property name="aiClient" ref="openAiClient"/>
 		<property name="configurationService" ref="configurationService"/>
 	</bean>

@@ -4,7 +4,7 @@
   Ensures action-id in backoffice config maps to this definition id.
 -->
 <action-definition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   id="org.training.backoffice.actions.translateDescriptionAction"
+                   id="com.translations.backoffice.actions.translateDescriptionAction"
                    xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/action-definition.xsd">
     <name>AI Translate Description</name>
     <description>Improve the current product description using AI.</description>
@@ -14,5 +14,5 @@
     <iconUri>icons/translate_description.png</iconUri>
 
     <!-- Java class implementing com.hybris.cockpitng.actions.CockpitAction -->
-    <actionClassName>org.training.backoffice.actions.TranslateDescriptionAction</actionClassName>
+    <actionClassName>com.translations.backoffice.actions.TranslateDescriptionAction</actionClassName>
 </action-definition>

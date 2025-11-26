@@ -31,5 +31,6 @@ translationsai/resources/*.xsd
 translationsai/platformhome.properties
 translationsai/resources/*-testclasses.xml
 translationsai/build.xml
+translationsai/gensrc/
 *.iml
 translationsai/lib/

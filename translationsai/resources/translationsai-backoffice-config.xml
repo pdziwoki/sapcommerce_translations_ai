@@ -10,7 +10,7 @@
         <y:actions>
             <y:group qualifier="common" position="40">
                 <!-- Place after Sync action (typically at position 30) -->
-                <y:action action-id="org.training.backoffice.actions.translateDescriptionAction" property="currentObject" position="40"/>
+                <y:action action-id="com.translations.backoffice.actions.translateDescriptionAction" property="currentObject" position="40"/>
             </y:group>
         </y:actions>
     </context>

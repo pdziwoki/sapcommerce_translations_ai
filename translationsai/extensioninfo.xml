@@ -13,7 +13,7 @@
         <!--PLACEHOLDER_FOR_SASS_REGISTRATION-->
                 		
         
-        <coremodule generated="true" manager="org.training.jalo.TranslationsaiManager" packageroot="org.training"/>
+        <coremodule generated="true" manager="com.translations.jalo.TranslationsaiManager" packageroot="com.translations"/>
                 		
         
         <meta key="backoffice-module" value="true"/>

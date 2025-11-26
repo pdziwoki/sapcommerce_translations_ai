@@ -6,7 +6,7 @@
 	xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/widgets.xsd">
 
 <!--    <widget-extension widgetId="backofficeMainSlot">-->
-<!--        <widget id="translationsai-perspective" widgetDefinitionId="org.training.widgets.translationsaiwidget"-->
+<!--        <widget id="translationsai-perspective" widgetDefinitionId="com.translations.widgets.translationsaiwidget"-->
 <!--            template="false" slotId="perspectives" title="Hello translationsai">-->
 <!--        </widget>-->
 <!--    </widget-extension>-->
