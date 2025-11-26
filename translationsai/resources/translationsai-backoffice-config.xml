@@ -5,12 +5,12 @@
 <config xmlns="http://www.hybris.com/cockpit/config"
         xmlns:y="http://www.hybris.com/cockpit/config/hybris">
 
-    <!-- AI Enhance Description Action for Product (Editor Area toolbar) -->
+    <!-- AI Translate Description Action for Product (Editor Area toolbar) -->
     <context type="Product" component="editorareaactions">
         <y:actions>
             <y:group qualifier="common" position="40">
                 <!-- Place after Sync action (typically at position 30) -->
-                <y:action action-id="org.training.backoffice.actions.enhanceDescriptionAction" property="currentObject" position="40"/>
+                <y:action action-id="org.training.backoffice.actions.translateDescriptionAction" property="currentObject" position="40"/>
             </y:group>
         </y:actions>
     </context>

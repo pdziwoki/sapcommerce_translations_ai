@@ -16,20 +16,35 @@ public final class PromptBuilder {
     }
 
     /**
-     * Build a prompt that first enhances the original description in the base language,
-     * then translates that enhanced description into the languages requested in options.targetLanguages.
-     * The AI must return a strict JSON array where each element has keys: "locale" and "enhanceddescription".
+     * Build a prompt for description processing. Behavior depends on {@link PromptOptions#isEnhanceSource()}:
+     * - If true: first improve the original description in the base language, then translate the improved version
+     * into requested target languages (enhance + translate).
+     * - If false: translate the original description as-is into requested target languages (translate-only).
+     * This method only constructs natural-language instructions; the OpenAI Java SDK is configured
+     * to return a structured {@link org.training.ai.dto.response.TranslationsResponse} that maps
+     * to a list of {@link org.training.ai.dto.response.Translation} items (lang, description).
      */
-    public static String buildEnhanceTranslatePrompt(final String sourceDescription, final Locale locale, final PromptOptions options) {
-        final String sourceLanguage = Optional.ofNullable(options.getSourceLanguage()).orElse(locale.toLanguageTag());
-        final String tone = Optional.ofNullable(options.getTone()).orElse("neutral professional");
-        final String length = options.getMaxLength() != null ? ("Limit to " + options.getMaxLength() + " words.") : "";
+    public static String buildTranslatePrompt(final String sourceDescription, final Locale locale, final PromptOptions options) {
+        final boolean enhance = options != null && options.isEnhanceSource();
 
-        final List<String> targets = Optional.ofNullable(options.getTargetLanguages()).orElse(Collections.singletonList(sourceLanguage));
+        final String sourceLanguage = Optional.ofNullable(options != null ? options.getSourceLanguage() : null)
+                .orElse(locale.toLanguageTag());
+        final String tone = Optional.ofNullable(options != null ? options.getTone() : null)
+                .orElse("neutral professional");
+        final String length = (options != null && options.getMaxLength() != null)
+                ? ("Limit to " + options.getMaxLength() + " words.")
+                : "";
+
+        final List<String> targets = Optional.ofNullable(options != null ? options.getTargetLanguages() : null)
+                .orElse(enhance ? Collections.singletonList(sourceLanguage) : Collections.emptyList());
 
         final StringBuilder prompt = new StringBuilder();
-        prompt.append("You are an expert product copywriter and translator. First, improve the following product description in the base language keeping factual accuracy, " +
-                "then translate that improved version into the requested languages.\n");
+        if (enhance) {
+            prompt.append("You are an expert product copywriter and translator. First, improve the following product description in the base language keeping factual accuracy, " +
+                    "then translate that improved version into the requested languages.\n");
+        } else {
+            prompt.append("You are a precise product translator. Translate the original product description from the base language to the requested languages WITHOUT enhancing or rewriting it. Preserve meaning and important terms.\n");
+        }
         prompt.append("- Base language: ").append(sourceLanguage).append(".\n");
         prompt.append("- Requested output languages (IETF tags): ").append(String.join(", ", targets)).append(".\n");
         prompt.append("- Tone: ").append(tone).append(".\n");

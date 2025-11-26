@@ -7,23 +7,23 @@ import org.training.ai.exception.AiClientException;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
- * Service for AI-powered product description enhancement
+ * Service for AI-powered product description translation and enhancement.
  */
 public interface TranslationsAiService {
     /**
-     * Enhance product description using AI and return enhanced text for multiple locales.
-     * The returned map keys are IETF BCP 47 language tags (e.g., "en", "de-DE").
+     * Translate and eventually enhance a product description using AI and return suggestions for multiple locales.
+     * Each suggestion is represented as a {@link org.training.ai.dto.response.Translation} item with
+     * an IETF BCP 47 language tag (e.g., "en", "de-DE") and the suggested description text.
      *
-     * @param product the product whose description should be enhanced
-     * @param locale  the base locale for enhancement (source language)
-     * @param options options for customizing the AI prompt including target languages
-     * @return map of locale isocode -> enhanced description
+     * @param product the product whose description should be enhanced/translated
+     * @param locale  the base (source) locale
+     * @param options options for customizing the AI prompt including target languages and mode
+     * @return list of language-tagged suggestions
      * @throws AiClientException if the AI call fails
      */
-    List<Translation> enhanceDescription(ProductModel product, Locale locale, PromptOptions options) throws AiClientException;
+    List<Translation> translateDescription(ProductModel product, Locale locale, PromptOptions options) throws AiClientException;
 
     /**
      * Check if the AI enhancement feature is enabled

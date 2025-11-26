@@ -44,13 +44,6 @@
             <version>1.8.10</version>
         </dependency>
 
-        <!-- OpenAI SDK -->
-<!--        <dependency>-->
-<!--            <groupId>com.openai</groupId>-->
-<!--            <artifactId>openai</artifactId>-->
-<!--            <version>4.8.0</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>com.openai</groupId>
             <artifactId>openai-java-client-okhttp</artifactId>

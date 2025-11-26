@@ -1,5 +1,12 @@
 package org.training.ai.dto.response;
 
+/**
+ * Single language-tagged suggestion returned by the AI.
+ * <p>
+ * Fields:
+ * - lang: IETF BCP 47 language tag (e.g., "en", "de-DE").
+ * - description: Suggested enhanced/translated description text for the given language.
+ */
 public class Translation {
 
     public Translation() {

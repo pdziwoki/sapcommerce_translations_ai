@@ -3,7 +3,6 @@
  */
 package org.training.ai.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hybris.platform.core.model.product.ProductModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import org.apache.commons.lang3.StringUtils;
@@ -18,10 +17,18 @@ import org.training.ai.service.TranslationsAiService;
 import org.training.ai.util.PromptBuilder;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 /**
- * Default implementation of TranslationsAiService
+ * Default implementation of {@link org.training.ai.service.TranslationsAiService}.
+ * <p>
+ * Features:
+ * - Two prompt modes controlled by {@link org.training.ai.dto.options.PromptOptions#isEnhanceSource()} (enhance+translate vs translate-only)
+ * - Mock mode when property `translationsai.mock.response` is true
+ * - OpenAI Java SDK used via {@link org.training.ai.client.AiClient}
  */
 public class DefaultTranslationsAiService implements TranslationsAiService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultTranslationsAiService.class);
@@ -35,10 +42,10 @@ public class DefaultTranslationsAiService implements TranslationsAiService {
     private ConfigurationService configurationService;
 
     @Override
-    public List<Translation> enhanceDescription(final ProductModel product, final Locale locale, final PromptOptions options)
+    public List<Translation> translateDescription(final ProductModel product, final Locale locale, final PromptOptions options)
             throws AiClientException {
         if (!isEnabled()) {
-            throw new AiClientException("AI enhancement feature is not enabled");
+            throw new AiClientException("AI translation feature is not enabled");
         }
 
         // Mock response path
@@ -51,11 +58,11 @@ public class DefaultTranslationsAiService implements TranslationsAiService {
             throw new AiClientException("Product description is empty for locale: " + locale);
         }
 
-        final String prompt = PromptBuilder.buildEnhanceTranslatePrompt(sourceDescription, locale, options);
+        final String prompt = PromptBuilder.buildTranslatePrompt(sourceDescription, locale, options);
         LOG.info("Built prompt\n[{}]", prompt);
 
         final AiClientOptions clientOptions = buildClientOptions();
-        return aiClient.enhance(prompt, clientOptions);
+        return aiClient.translate(prompt, clientOptions);
     }
 
     private static List<Translation> getMock(Locale locale, PromptOptions options) {
@@ -63,25 +70,11 @@ public class DefaultTranslationsAiService implements TranslationsAiService {
                 ? options.getTargetLanguages()
                 : Collections.singletonList(options.getSourceLanguage() != null ? options.getSourceLanguage() : locale.toLanguageTag());
         final List<Translation> mock = new ArrayList<>();
-        for (String t : targets) {
-            final Translation translation = new Translation(t, "MOCK ENHANCED DESCRIPTION for " + t + " – lorem ipsum");
+        for (final String t : targets) {
+            final Translation translation = new Translation(t, "MOCK TRANSLATED DESCRIPTION for [" + t + "] – language");
             mock.add(translation);
         }
         return mock;
-    }
-
-    private Map<String, String> parseResponseToMap(final String response) throws Exception {
-        final ObjectMapper mapper = new ObjectMapper();
-        final List<Map<String, Object>> list = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, mapper.getTypeFactory().constructMapType(Map.class, String.class, Object.class)));
-        final Map<String, String> result = new LinkedHashMap<>();
-        for (Map<String, Object> item : list) {
-            final Object loc = item.get("locale");
-            final Object desc = item.get("enhanceddescription");
-            if (loc != null && desc != null) {
-                result.put(String.valueOf(loc), String.valueOf(desc));
-            }
-        }
-        return result;
     }
 
     @Override

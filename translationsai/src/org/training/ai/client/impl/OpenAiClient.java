@@ -14,9 +14,11 @@ import org.training.ai.exception.AiClientException;
 import java.util.List;
 
 /**
- * OpenAI client implementation using OpenAI Java SDK (Responses API).
+ * OpenAI client implementation using the OpenAI Java SDK (Chat Completions) with structured responses.
  * <p>
- * The API key is injected via the {@link #setApiKey(String)} setter (e.g., from a properties file/Spring),
+ * The SDK is configured to map the assistant response directly into a
+ * {@link org.training.ai.dto.response.TranslationsResponse} via responseFormat.
+ * The API key is injected via the {@link #setApiKey(String)} setter (e.g., from Spring properties),
  * not via environment variables.
  */
 public class OpenAiClient implements AiClient {
@@ -25,7 +27,7 @@ public class OpenAiClient implements AiClient {
     private String apiKey;
 
     @Override
-    public List<Translation> enhance(final String prompt, final AiClientOptions options) throws AiClientException {
+    public List<Translation> translate(final String prompt, final AiClientOptions options) throws AiClientException {
         try {
 
             final OpenAIClient client = OpenAIOkHttpClient.builder()

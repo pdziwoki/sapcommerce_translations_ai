@@ -4,33 +4,31 @@
 This extension now includes an AI-powered product description enhancement feature that uses OpenAI's GPT models to improve product descriptions in the SAP Commerce Cloud backoffice.
 
 ## Features
-- **Backoffice Action**: "AI Enhance Description" button in Product editor toolbar
-- **Widget Interface**: Rich UI for configuring enhancement options and previewing results
-- **Customizable Options**:
-  - Tone selection (Professional, Friendly, Concise, Detailed)
-  - Max length control
-  - Technical terms preservation
-- **Preview & Apply**: Review AI-enhanced descriptions before applying them
-- **Multi-language Support**: Works with the current session locale
+- Backoffice Action: "AI Translate Description" button in the Product editor toolbar
+- Modal dialog to preview and edit AI suggestions before applying
+- Customizable options:
+  - Tone selection (e.g., professional, friendly)
+  - Max length control (optional)
+- Two modes: enhance+translate or translate-only (via PromptOptions.enhanceSource)
+- Multi-language support: suggestions for all supported locales (base language first)
 
 ## Architecture
 
 ### Service Layer
 - **TranslationsAiService**: Main service interface for AI enhancement
-- **OpenAiClient**: HTTP client for OpenAI API communication
+- **OpenAiClient**: Java SDK client for OpenAI (structured responses)
 - **PromptBuilder**: Constructs effective prompts for the AI model
 - **DTOs**: PromptOptions and AiClientOptions for configuration
 
 ### UI Components
-- **EnhanceDescriptionAction**: Backoffice action that appears in Product editor
-- **TranslationsaiWidget**: Rich ZK widget for parameter input and preview
-- **TranslationsaiController**: Widget controller handling user interactions
+- TranslateDescriptionAction: Backoffice action that appears in the Product editor and opens a modal dialog for AI suggestions
+- ZK Controller classes used by legacy samples are present but not required for the AI dialog
 
 ### Configuration
 All beans are configured in `translationsai-backoffice-spring.xml`:
-- `openAiClient`: OpenAI client with API key and base URL
-- `translationsAiService`: Main AI service
-- `enhanceDescriptionAction`: Backoffice action
+- openAiClient: OpenAI Java SDK client (API key injected via Spring property)
+- translationsAiService: Main AI service
+- Label locator bean for backoffice labels
 
 ## Configuration
 
@@ -41,13 +39,14 @@ Default configuration is provided in the extension's `project.properties` file. 
 # Enable AI enhancement
 translationsai.enabled=true
 
-# OpenAI API Configuration
+# Optional: return mock translations without calling OpenAI (useful for demos)
+translationsai.mock.response=false
+
+# OpenAI API Configuration (API key is injected to the OpenAiClient bean)
 translationsai.openai.apiKey=sk-your-actual-api-key-here
-translationsai.openai.baseUrl=https://api.openai.com/v1
 translationsai.openai.model=gpt-4o-mini
 
-# AI Model Parameters
-translationsai.maxTokens=512
+# AI Client Options
 translationsai.timeout.ms=20000
 ```
 
@@ -68,24 +67,19 @@ After configuration, restart SAP Commerce to load the new settings.
 ### Using the Backoffice Action
 
 1. Open the Backoffice and navigate to a Product
-2. In the Product editor toolbar, click "AI Enhance Description"
+2. In the Product editor toolbar, click "AI Translate Description"
 3. A dialog will show:
    - Current description
    - AI-enhanced version
 4. Click "OK" to apply or "Cancel" to discard
 
-### Using the Widget (Optional)
+### Result Dialog
 
-The widget provides more control:
+When you trigger the action, a dialog opens showing:
 
-1. Open the widget (can be added to Product perspective)
-2. View the current description
-3. Configure options:
-   - **Tone**: Select the desired writing style
-   - **Max Length**: Optionally limit word count
-4. Click "Enhance with AI"
-5. Review the enhanced description in the preview panel
-6. Click "Apply" to save or "Try Again" to regenerate
+- Original description for the base language
+- One editable textbox per target language with AI suggestions
+- Buttons to Apply (save to product) or Cancel
 
 ## Implementation Details
 
@@ -108,7 +102,7 @@ translationsai/
 │       └── PromptBuilder.java
 ├── backoffice/src/org/training/
 │   ├── backoffice/actions/
-│   │   └── EnhanceDescriptionAction.java
+│   │   └── TranslateDescriptionAction.java
 │   └── widgets/
 │       └── TranslationsaiController.java
 ├── backoffice/resources/widgets/TranslationsaiWidget/
