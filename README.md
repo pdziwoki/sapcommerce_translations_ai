@@ -52,14 +52,7 @@ translationsai.timeout.ms=20000
 
 **Note**: Default values are stored in `translationsai/project.properties`. Override them in `local.properties` for your environment.
 
-### 2. Obtain OpenAI API Key
-1. Create an account at https://platform.openai.com/
-2. Generate an API key from the API keys section
-3. Replace `YOUR_OPENAI_API_KEY_HERE` with your actual key
-
-**Security Note**: For production, use encrypted properties or environment variables instead of plain text API keys.
-
-### 3. Restart the Platform
+### 2. Restart the Platform
 After configuration, restart SAP Commerce to load the new settings.
 
 ## Usage
